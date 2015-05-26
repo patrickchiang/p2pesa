@@ -61,7 +61,7 @@ module.exports = function (app) {
 
                     user.one_time_code = code;
                     user.save();
-                    
+
                     //Send an SMS text message
                     client.sendMessage({
                         to: phone(user.phone)[0],
@@ -158,6 +158,14 @@ module.exports = function (app) {
                 });
             });
         });
+    });
+
+    app.post('/mobile', function (req, res) {
+        if (twilio.validateExpressRequest(req, config.twilio_auth)) {
+            console.log(req.body);
+        } else {
+            res.send('you are not twilio.  Buzz off.');
+        }
     });
 
     app.get('/logout', function (req, res) {
