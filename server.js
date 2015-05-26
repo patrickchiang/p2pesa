@@ -23,11 +23,19 @@ require('./routes/auth.js')(app);
  */
 
 app.get('/', function (req, res, next) {
-    if (!req.user) {
-        res.redirect('/login.html');
-    } else {
-        res.redirect('/index.html');
-    }
+    res.redirect('/index.html');
+});
+
+app.get('/index.html', function (req, res) {
+    res.render('index.jade');
+});
+
+app.get('/confirm.html', ensure.user, function (req, res) {
+    res.render('confirm.jade');
+});
+
+app.get('/secure.html', ensure.user, ensure.twostep, function (req, res) {
+    res.render('secure.jade');
 });
 
 /**

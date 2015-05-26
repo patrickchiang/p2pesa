@@ -1,29 +1,26 @@
 module.exports = function (sequelize, Sequelize) {
     var User = sequelize.define('User', {
-        email: {
+        phone: {
             type: Sequelize.STRING,
             allowNull: false,
             unique: true
         },
-        username: {
+        pin: {
             type: Sequelize.STRING,
-            allowNull: true,   // TODO: change
-            unique: true
+            allowNull: true    // null for non-users
         },
-        password: {
+        branch_status: {
             type: Sequelize.STRING,
-            allowNull: false
+            allowNull: true
         },
-        profile_image: {
+        one_time_code: {
             type: Sequelize.STRING,
-            allowNull: false
+            allowNull: true
         }
     }, {
         freezeTableName: true,
         classMethods: {
             associate: function (models) {
-                User.hasMany(models.Photo);
-                User.hasMany(models.Album);
             }
         }
     });
