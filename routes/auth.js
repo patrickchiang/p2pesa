@@ -63,9 +63,8 @@ module.exports = function (app) {
 
                     //Send an SMS text message
                     client.sendMessage({
-
                         to: '+12063029844',
-                        from: '+12069659112',
+                        from: config.twilio_phone,
                         body: 'Your code is: ' + code
 
                     }, function (err, responseData) {
