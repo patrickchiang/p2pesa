@@ -1,0 +1,15 @@
+{
+  "name": "IsoPro",
+  "description": "IsoPro backend",
+  "dependencies": {
+    "express": "4.x",
+    "mysql": "2.5.2",
+    "bcrypt-nodejs": "0.0.3",
+    "passport": "0.2.1",
+    "passport-local": "1.0.0",
+    "express-session": "1.9.0",
+    "sequelize": "2.0.0-rc8",
+    "jade": "^1.9.2",
+    "body-parser": "1.12.2"
+  }
+}
