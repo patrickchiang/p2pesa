@@ -1,6 +1,8 @@
 var fs = require("fs");
 var path = require("path");
-var Sequelize = require('sequelize'), sequelize = new Sequelize('p2pesa', 'root', 'root');
+
+var config = require('../config.js');
+var Sequelize = require('sequelize'), sequelize = new Sequelize(config.db_name, config.db_user, config.db_pass);
 var db = {};
 
 fs.readdirSync(__dirname)

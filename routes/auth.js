@@ -7,6 +7,9 @@ module.exports = function (app) {
     var session = require('express-session');
     var bodyParser = require('body-parser');
 
+    var config = require('../config');
+    var client = require('twilio')(config.twilio_sid, config.twilio_auth);
+
     var models = require('../models');
 
     /**
@@ -19,7 +22,7 @@ module.exports = function (app) {
     app.use(bodyParser.json());
 
     app.use(session({
-        secret: 'patrick is the best as always',
+        secret: config.session_secret,
         resave: true,
         saveUninitialized: true
     }));
@@ -51,6 +54,28 @@ module.exports = function (app) {
                     return done(null, false);
 
                 if (bcrypt.compareSync(password, user.pin)) {
+
+                    // Generate random 5 digit code
+                    var code = (Math.random() + 1).toString(36).substring(2, 7).toUpperCase();
+
+                    user.one_time_code = code;
+                    user.save();
+
+                    //Send an SMS text message
+                    client.sendMessage({
+
+                        to: '+12063029844',
+                        from: '+12069659112',
+                        body: 'Your code is: ' + code
+
+                    }, function (err, responseData) {
+                        if (!err) {
+                            console.log(responseData);
+                        } else {
+                            console.log(err);
+                        }
+                    });
+
                     return done(null, {
                         phone: user.phone
                     });
@@ -125,7 +150,7 @@ module.exports = function (app) {
 
             console.log('Saving Central Bank User');
             models.User.create({
-                phone: '0000000000',
+                phone: '2063029844',
                 pin: bcrypt.hashSync('secure'),
                 branch_status: 'Central',
                 one_time_code: 'GOOD'
