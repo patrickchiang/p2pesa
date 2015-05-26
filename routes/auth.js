@@ -8,7 +8,8 @@ module.exports = function (app) {
     var bodyParser = require('body-parser');
 
     var config = require('../config');
-    var client = require('twilio')(config.twilio_sid, config.twilio_auth);
+    var twilio = require('twilio');
+    var client = twilio(config.twilio_sid, config.twilio_auth);
     var phone = require('phone');
 
     var models = require('../models');
