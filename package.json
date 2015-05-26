@@ -12,6 +12,7 @@
     "sequelize": "2.0.0-rc8",
     "jade": "^1.9.2",
     "body-parser": "1.12.2",
-    "twilio": "2.2.0"
+    "twilio": "2.2.0",
+    "phone": "1.0.3"
   }
 }

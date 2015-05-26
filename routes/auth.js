@@ -9,6 +9,7 @@ module.exports = function (app) {
 
     var config = require('../config');
     var client = require('twilio')(config.twilio_sid, config.twilio_auth);
+    var phone = require('phone');
 
     var models = require('../models');
 
@@ -60,17 +61,15 @@ module.exports = function (app) {
 
                     user.one_time_code = code;
                     user.save();
-
+                    
                     //Send an SMS text message
                     client.sendMessage({
-                        to: '+12063029844',
+                        to: phone(user.phone)[0],
                         from: config.twilio_phone,
                         body: 'Your code is: ' + code
 
                     }, function (err, responseData) {
-                        if (!err) {
-                            console.log(responseData);
-                        } else {
+                        if (err) {
                             console.log(err);
                         }
                     });
