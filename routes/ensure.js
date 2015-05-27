@@ -3,6 +3,7 @@ module.exports = {
     twostep: ensureSecondFactor,
     elevated: ensureElevated,
     central: ensureCentral,
+    branch: ensureBranch,
     save: saveRedirect
 };
 
@@ -37,6 +38,14 @@ function ensureElevated(req, res, next) {
 
 function ensureCentral(req, res, next) {
     if (req.isAuthenticated() && req.user.branch_status == 'Central') {
+        return next();
+    }
+
+    res.redirect('/branch');
+}
+
+function ensureBranch(req, res, next) {
+    if (req.isAuthenticated() && req.user.branch_status == 'Branch') {
         return next();
     }
 

@@ -81,6 +81,7 @@ module.exports = function (app) {
                     });
 
                     return done(null, {
+                        id: user.id,
                         phone: user.phone
                     });
                 } else {
@@ -107,6 +108,7 @@ module.exports = function (app) {
 
                 if (password == user.one_time_code) {
                     return done(null, {
+                        id: user.id,
                         phone: user.phone,
                         one_time_code: user.one_time_code
                     });
@@ -134,6 +136,7 @@ module.exports = function (app) {
 
                 if (bcrypt.compareSync(password, user.pin)) {
                     return done(null, {
+                        id: user.id,
                         phone: user.phone,
                         branch_status: user.branch_status
                     });
