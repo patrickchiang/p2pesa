@@ -201,8 +201,16 @@ module.exports = function (app) {
 
             models.User.create({
                 phone: '2063029844',
-                pin: bcrypt.hashSync('hunter2'),
+                pin: bcrypt.hashSync('secure'),
                 branch_status: 'Branch'
+            }).then(function (user) {
+                user.save();
+            });
+
+            models.User.create({
+                phone: '2064469181',
+                pin: bcrypt.hashSync('secure'),
+                branch_status: 'User'
             }).then(function (user) {
                 user.save();
             });

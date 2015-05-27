@@ -30,7 +30,7 @@ module.exports = function (app) {
                 phone: req.body.phone
             }
         }).then(function (receiver) {
-            if (receiver == null || receiver.branch_status != 'Branch') {
+            if (receiver == null || receiver.branch_status != 'User') {
                 res.redirect('/transfer?valid=false');
             }
 
@@ -51,7 +51,37 @@ module.exports = function (app) {
                     });
                 }
             });
-        })
+        });
+    });
+
+    app.post('/user-transfer', ensure.branch, function (req, res) {
+        models.User.find({
+            where: {
+                phone: req.body.phone
+            }
+        }).then(function (receiver) {
+            if (receiver == null || receiver.branch_status != 'User') {
+                res.redirect('/transfer?valid=false');
+            }
+
+            validateTransaction(req.user.id, receiver.id, req.body.amount, function (valid) {
+                console.log('Valid: ' + valid);
+                if (!valid) {
+                    res.redirect('/transfer?valid=false');
+                } else {
+                    models.Transaction.create({
+                        amount: req.body.amount,
+                        senderId: req.user.id,
+                        receiverId: receiver.id
+                    }).then(function (transaction) {
+                        transaction.save().then(function () {
+                            console.log('Transaction complete.');
+                            res.redirect('/transfer?valid=true');
+                        });
+                    });
+                }
+            });
+        });
     });
 
     function validateTransaction(senderId, receiverId, amount, done) {
@@ -64,7 +94,6 @@ module.exports = function (app) {
         }
 
         userSum(senderId, function (sum) {
-            console.log('Sum2: ' + sum);
             done(sum >= amount);
         });
     }
@@ -77,18 +106,14 @@ module.exports = function (app) {
             )
         }).then(function (transactions) {
             var sum = 0;
-            console.log(transactions);
             for (var i = 0; i < transactions.length; i++) {
                 var t = transactions[i];
-                console.log(t);
                 if (t.receiverId == userId) {
                     sum += t.amount;
                 } else if (t.senderId == userId) {
                     sum -= t.amount;
                 }
             }
-
-            console.log('Sum1: ' + sum);
 
             done(sum);
         });
