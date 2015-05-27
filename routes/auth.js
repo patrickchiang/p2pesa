@@ -82,7 +82,8 @@ module.exports = function (app) {
 
                     return done(null, {
                         id: user.id,
-                        phone: user.phone
+                        phone: user.phone,
+                        branch_status: user.branch_status
                     });
                 } else {
                     return done(null, false);
@@ -110,7 +111,8 @@ module.exports = function (app) {
                     return done(null, {
                         id: user.id,
                         phone: user.phone,
-                        one_time_code: user.one_time_code
+                        one_time_code: user.one_time_code,
+                        branch_status: user.branch_status
                     });
                 } else {
                     return done(null, false);
@@ -165,8 +167,36 @@ module.exports = function (app) {
         res.redirect('/secure');
     });
 
-    app.post('/register-user', function (req, res) {
-        models.User.find({phone: req.body.phone}).then(function (model) {
+    app.post('/central-register', function (req, res) {
+        models.User.find({
+            where: {
+                phone: req.body.phone
+            }
+        }).then(function (model) {
+            if (model != null) {
+                console.log('User already found');
+                res.status(409).end();
+            } else {
+                models.User.create({
+                    phone: req.body.phone,
+                    pin: bcrypt.hashSync(req.body.pin),
+                    branch_status: 'Branch'
+                }).then(function (result) {
+                    console.log('Branch created.');
+                    res.redirect(req.session.returnTo);
+                }).catch(function (err) {
+                    console.log(err);
+                });
+            }
+        });
+    });
+
+    app.post('/branch-register', function (req, res) {
+        models.User.find({
+            where: {
+                phone: req.body.phone
+            }
+        }).then(function (model) {
             if (model != null) {
                 console.log('User already found');
                 res.status(409).end();
@@ -176,9 +206,8 @@ module.exports = function (app) {
                     pin: bcrypt.hashSync(req.body.pin),
                     branch_status: 'User'
                 }).then(function (result) {
-                    passport.authenticate('local-user')(req, res, function () {
-                        res.json('/');
-                    });
+                    console.log('User created.');
+                    res.redirect(req.session.returnTo);
                 }).catch(function (err) {
                     console.log(err);
                 });
@@ -200,7 +229,7 @@ module.exports = function (app) {
             });
 
             models.User.create({
-                phone: '2063029844',
+                phone: '2064469181',
                 pin: bcrypt.hashSync('secure'),
                 branch_status: 'Branch'
             }).then(function (user) {
@@ -208,7 +237,7 @@ module.exports = function (app) {
             });
 
             models.User.create({
-                phone: '2064469181',
+                phone: '2063029844',
                 pin: bcrypt.hashSync('secure'),
                 branch_status: 'User'
             }).then(function (user) {

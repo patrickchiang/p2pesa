@@ -1,9 +1,15 @@
 doctype html
 html
     head
-        title P2Pesa
+        title P2Pesa Confirm
     body
-        form(action='/login-user-two', method='post')
-            input(type='text', name='phone', hidden='hidden', value='2063029844')
-            input(type='text', name='code', placeholder='Confirmation Code')
-            input(type='submit', value='Confirm')
+        if user && user.branch_status == 'User'
+            form(action='/login-user-two', method='post')
+                input(type='text', name='phone', hidden='hidden', value=user.phone)
+                input(type='text', name='code', placeholder='Confirmation Code')
+                input(type='submit', value='Confirm')
+        else if user && user.branch_status == 'Branch'
+            form(action='/withdraw', method='post')
+                input(type='text', name='phone', hidden='hidden', value=user.phone)
+                input(type='text', name='code', placeholder='Confirmation Code')
+                input(type='submit', value='Confirm')

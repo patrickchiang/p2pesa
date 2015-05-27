@@ -1,0 +1,11 @@
+doctype html
+html
+    head
+        title P2Pesa Central Control
+    body
+        p You are logged in as a branch controller.
+        p Withdraw money from user
+        form(action='/confirm', method='post')
+            input(type='text', name='phone', placeholder='Customer Phone ID')
+            input(type='text', name='amount', placeholder='Amount')
+            input(type='submit', value='Withdraw Money')

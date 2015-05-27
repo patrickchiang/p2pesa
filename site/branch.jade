@@ -11,6 +11,7 @@ html
                 a(href='/register') Create New Branch
         else if user && user.branch_status == 'Branch'
             p You are logged in as a branch controller.
+            p You have $#{sum}
             p
                 a(href='/withdraw') Withdraw Money
             p

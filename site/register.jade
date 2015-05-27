@@ -1,0 +1,19 @@
+doctype html
+html
+    head
+        title P2Pesa Register
+    body
+        if user && user.branch_status == 'Central'
+            p You are logged in as the central controller.
+            p Create New Branch
+            form(action='/central-register', method='post')
+                input(type='text', name='phone', placeholder='Phone Number')
+                input(type='password', name='pin', placeholder='Pin')
+                input(type='submit', value='Login')
+        else if user && user.branch_status == 'Branch'
+            p You are logged in as a branch controller.
+            p Create New User
+            form(action='/branch-register', method='post')
+                input(type='text', name='phone', placeholder='Customer Phone ID')
+                input(type='text', name='amount', placeholder='Amount')
+                input(type='submit', value='Add Money')
