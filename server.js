@@ -17,26 +17,32 @@ app.set('views', __dirname + '/site');
  */
 
 require('./routes/auth.js')(app);
+require('./routes/transfer.js')(app);
 
 /**
  * Views
  */
 
 app.get('/', function (req, res, next) {
-    res.redirect('/index.html');
-});
-
-app.get('/index.html', function (req, res) {
     res.render('index.jade');
 });
 
-app.get('/confirm.html', ensure.user, function (req, res) {
+app.get('/confirm', ensure.user, function (req, res) {
     res.render('confirm.jade');
 });
 
-app.get('/secure.html', ensure.user, ensure.twostep, function (req, res) {
+app.get('/secure', ensure.user, ensure.twostep, function (req, res) {
     res.render('secure.jade');
 });
+
+app.get('/branch', ensure.save, function (req, res) {
+    res.render('branch.jade', {user: req.user});
+});
+
+app.get('/transfer', ensure.save, ensure.user, function (req, res) {
+    res.render('transfer.jade', {user: req.user});
+});
+
 
 /**
  * Static views

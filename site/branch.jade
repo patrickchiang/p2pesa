@@ -1,0 +1,24 @@
+doctype html
+html
+    head
+        title P2Pesa Branch Control
+    body
+        if user && user.branch_status == 'Central'
+            p You are logged in as the central controller.
+            p
+                a(href='/transfer') Add Money to Branch
+            p
+                a(href='/register') Create New Branch
+        else if user && user.branch_status == 'Branch'
+            p You are logged in as a branch controller.
+            p
+                a(href='/withdraw') Withdraw Money
+            p
+                a(href='/transfer') Add Money to Account
+            p
+                a(href='/register') Create New User
+        else
+            form(action='/login-elevated', method='post')
+                input(type='text', name='phone', placeholder='Phone Number')
+                input(type='password', name='pin', placeholder='Pin')
+                input(type='submit', value='Login')

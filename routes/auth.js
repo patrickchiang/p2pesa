@@ -13,6 +13,7 @@ module.exports = function (app) {
     var phone = require('phone');
 
     var models = require('../models');
+    var ensure = require('./ensure.js')
 
     /**
      * Sessions setup
@@ -51,7 +52,11 @@ module.exports = function (app) {
             passwordField: 'pin'
         },
         function (username, password, done) {
-            models.User.find({phone: username}).then(function (user) {
+            models.User.find({
+                where: {
+                    phone: username
+                }
+            }).then(function (user) {
                 if (user == null)
                     return done(null, false);
 
@@ -92,7 +97,11 @@ module.exports = function (app) {
             passwordField: 'code'
         },
         function (username, password, done) {
-            models.User.find({phone: username}).then(function (user) {
+            models.User.find({
+                where: {
+                    phone: username
+                }
+            }).then(function (user) {
                 if (user == null)
                     return done(null, false);
 
@@ -110,16 +119,47 @@ module.exports = function (app) {
         }
     ));
 
+    passport.use('local-elevated', new LocalStrategy({
+            usernameField: 'phone',
+            passwordField: 'pin'
+        },
+        function (username, password, done) {
+            models.User.find({
+                where: {
+                    phone: username
+                }
+            }).then(function (user) {
+                if (user == null)
+                    return done(null, false);
+
+                if (bcrypt.compareSync(password, user.pin)) {
+                    return done(null, {
+                        phone: user.phone,
+                        branch_status: user.branch_status
+                    });
+                } else {
+                    return done(null, false);
+                }
+            }).error(function (err) {
+                return done(null, false);
+            });
+        }
+    ));
+
     /**
      * Routing
      */
 
     app.post('/login-user', passport.authenticate('local-user', {failureRedirect: 'index.html'}), function (req, res) {
-        res.redirect('confirm.html');
+        res.redirect('/confirm');
+    });
+
+    app.post('/login-elevated', passport.authenticate('local-elevated', {failureRedirect: '/branch'}), function (req, res) {
+        res.redirect(req.session.returnTo);
     });
 
     app.post('/login-user-two', passport.authenticate('local-user-two', {failureRedirect: 'confirm.html'}), function (req, res) {
-        res.redirect('secure.html');
+        res.redirect('/secure');
     });
 
     app.post('/register-user', function (req, res) {
@@ -149,14 +189,19 @@ module.exports = function (app) {
 
             console.log('Saving Central Bank User');
             models.User.create({
-                phone: '2063029844',
+                phone: '0000000000',
                 pin: bcrypt.hashSync('secure'),
-                branch_status: 'Central',
-                one_time_code: 'GOOD'
+                branch_status: 'Central'
             }).then(function (user) {
-                user.save().then(function () {
-                    res.json('initing...');
-                });
+                user.save();
+            });
+
+            models.User.create({
+                phone: '2063029844',
+                pin: bcrypt.hashSync('hunter2'),
+                branch_status: 'Branch'
+            }).then(function (user) {
+                user.save();
             });
         });
     });
@@ -165,14 +210,14 @@ module.exports = function (app) {
         if (twilio.validateExpressRequest(req, config.twilio_auth)) {
             console.log(req.body);
         } else {
-            res.send('you are not twilio.  Buzz off.');
+            res.send('You are not twilio.  Buzz off.');
         }
     });
 
     app.get('/logout', function (req, res) {
         req.logout();
         delete req.session.secondFactor;
-        res.redirect('index.html');
+        res.redirect('/');
     });
 
 };

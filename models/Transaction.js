@@ -2,8 +2,7 @@ module.exports = function (sequelize, Sequelize) {
     var Transaction = sequelize.define('Transaction', {
         one_time_code: {
             type: Sequelize.STRING,
-            allowNull: false,
-            unique: true
+            allowNull: true
         },
         amount: {
             type: Sequelize.DECIMAL,
