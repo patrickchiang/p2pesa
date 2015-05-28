@@ -24,5 +24,20 @@ p {
 }
 
 a.btn {
-    width: 20em !important;
+    width: 20em;
+}
+
+@media (max-width: 768px) {
+    input.btn {
+        width: 100%;
+        display: block;
+    }
+
+    a.btn {
+        width: 100%;
+    }
+
+    .form-control {
+        margin-bottom: 0.5em;
+    }
 }
