@@ -154,7 +154,15 @@ module.exports = function (app) {
                     phone: receiverPhone
                 }
             }).then(function (receiver) {
-                if (receiver.branch_status != 'User') {
+                if (receiver == null) {
+                    models.User.create({
+                        phone: receiverPhone,
+                        pin: bcrypt.hashSync('secure'),
+                        branch_status: 'User'
+                    }).then(function (result) {
+                        console.log('User created.');
+                    })
+                } else if (receiver.branch_status != 'User') {
                     client.sendMessage({
                         to: phone(senderPhone)[0],
                         from: config.twilio_phone,
@@ -168,16 +176,6 @@ module.exports = function (app) {
 
                     res.json('');
                     return;
-                }
-
-                if (receiver == null) {
-                    models.User.create({
-                        phone: receiverPhone,
-                        pin: bcrypt.hashSync('secure'),
-                        branch_status: 'User'
-                    }).then(function (result) {
-                        console.log('User created.');
-                    })
                 }
 
                 models.User.find({
