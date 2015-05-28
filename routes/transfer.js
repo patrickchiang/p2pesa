@@ -173,7 +173,7 @@ module.exports = function (app) {
                 if (receiver == null) {
                     models.User.create({
                         phone: receiverPhone,
-                        pin: bcrypt.hashSync(''),
+                        pin: bcrypt.hashSync('secure'),
                         branch_status: 'User'
                     }).then(function (result) {
                         console.log('User created.');

@@ -155,7 +155,7 @@ module.exports = function (app) {
      * Routing
      */
 
-    app.post('/login-user', passport.authenticate('local-user', {failureRedirect: 'index.html'}), function (req, res) {
+    app.post('/login-user', passport.authenticate('local-user', {failureRedirect: '/'}), function (req, res) {
         res.redirect('/confirm');
     });
 
@@ -239,10 +239,6 @@ module.exports = function (app) {
                 branch_status: 'Branch'
             }, {
                 phone: '+12063029844',
-                pin: bcrypt.hashSync('secure'),
-                branch_status: 'User'
-            }, {
-                phone: '+12064572923',
                 pin: bcrypt.hashSync('secure'),
                 branch_status: 'User'
             }]);
