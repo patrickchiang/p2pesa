@@ -160,7 +160,7 @@ module.exports = function (app) {
                         pin: bcrypt.hashSync('secure'),
                         branch_status: 'User'
                     }).then(function (result) {
-                        smsSend(senderPhone, receiverPhone, amount, {id: result.id});
+                        smsSend(senderPhone, receiverPhone, amount, {id: result.id}, res);
                     });
                 } else if (receiver.branch_status != 'User') {
                     client.sendMessage({
@@ -177,7 +177,7 @@ module.exports = function (app) {
                     res.json('');
                     return;
                 } else {
-                    smsSend(senderPhone, receiverPhone, amount, receiver);
+                    smsSend(senderPhone, receiverPhone, amount, receiver, res);
                 }
 
             });
@@ -186,7 +186,7 @@ module.exports = function (app) {
         }
     });
 
-    function smsSend(senderPhone, receiverPhone, amount, receiver) {
+    function smsSend(senderPhone, receiverPhone, amount, receiver, res) {
         models.User.find({
             where: {
                 phone: senderPhone
