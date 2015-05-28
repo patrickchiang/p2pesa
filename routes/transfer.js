@@ -7,7 +7,7 @@ module.exports = function (app) {
     var twilio = require('twilio');
     var client = twilio(config.twilio_sid, config.twilio_auth);
     var phone = require('phone');
-
+    var bcrypt = require('bcrypt-nodejs');
 
     app.post('/central-transfer', ensure.central, function (req, res) {
         models.User.find({
