@@ -250,7 +250,7 @@ module.exports = function (app) {
                             client.sendMessage({
                                 to: phone(senderPhone)[0],
                                 from: config.twilio_phone,
-                                body: 'You have successfully sent ' + receiverPhone + ' $' + amount + '. Your balance is now $' + sum
+                                body: 'You have successfully sent ' + receiverPhone + ' $' + amount + '. Your balance is now $' + (sum - amount)
                             }, function (err, responseData) {
                                 if (err) {
                                     console.log(err);
