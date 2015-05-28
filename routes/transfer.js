@@ -189,8 +189,8 @@ module.exports = function (app) {
                             return;
                         } else {
                             models.Transaction.create({
-                                amount: req.body.amount,
-                                senderId: req.user.id,
+                                amount: amount,
+                                senderId: sender.id,
                                 receiverId: receiver.id
                             }).then(function (transaction) {
                                 transaction.save().then(function () {
