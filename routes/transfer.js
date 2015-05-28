@@ -149,23 +149,35 @@ module.exports = function (app) {
             var n = message.split(' ');
             var receiverPhone = n[n.length - 1];
 
-            console.log(message);
-            console.log(amount);
-            console.log(senderPhone);
-            console.log(receiverPhone);
-
-            var resp = new twilio.TwimlResponse();
-
             models.User.find({
                 where: {
                     phone: receiverPhone
                 }
             }).then(function (receiver) {
-                if (receiver == null || receiver.branch_status != 'User') {
-                    resp = new twilio.TwimlResponse();
-                    resp.message('Bad receiver');
-                    res.send(resp.toString());
+                if (receiver.branch_status != 'User') {
+                    client.sendMessage({
+                        to: phone(senderPhone)[0],
+                        from: config.twilio_phone,
+                        body: 'Receiver is not a valid P2Pesa user. Please try again with another user.'
+
+                    }, function (err, responseData) {
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
+
+                    res.json('');
                     return;
+                }
+
+                if (receiver == null) {
+                    models.User.create({
+                        phone: receiverPhone,
+                        pin: bcrypt.hashSync(''),
+                        branch_status: 'User'
+                    }).then(function (result) {
+                        console.log('User created.');
+                    })
                 }
 
                 models.User.find({
@@ -173,19 +185,37 @@ module.exports = function (app) {
                         phone: senderPhone
                     }
                 }).then(function (sender) {
-                    if (receiver == null || receiver.branch_status != 'User') {
-                        resp = new twilio.TwimlResponse();
-                        resp.message('You\'re not a user.');
-                        res.send(resp.toString());
+                    if (sender == null || sender.branch_status != 'User') {
+                        client.sendMessage({
+                            to: phone(senderPhone)[0],
+                            from: config.twilio_phone,
+                            body: 'You are not a valid P2Pesa user. Please register an account.'
+
+                        }, function (err, responseData) {
+                            if (err) {
+                                console.log(err);
+                            }
+                        });
+
+                        res.json('');
                         return;
                     }
 
                     utility.validateTransaction(sender.id, receiver.id, amount, function (valid) {
                         console.log('Valid: ' + valid);
                         if (!valid) {
-                            resp = new twilio.TwimlResponse();
-                            resp.message('Invalid send operation.');
-                            res.send(resp.toString());
+                            client.sendMessage({
+                                to: phone(senderPhone)[0],
+                                from: config.twilio_phone,
+                                body: 'Your send money request was not formatted correctly.'
+
+                            }, function (err, responseData) {
+                                if (err) {
+                                    console.log(err);
+                                }
+                            });
+
+                            res.json('');
                             return;
                         } else {
                             models.Transaction.create({
@@ -194,9 +224,29 @@ module.exports = function (app) {
                                 receiverId: receiver.id
                             }).then(function (transaction) {
                                 transaction.save().then(function () {
-                                    resp = new twilio.TwimlResponse();
-                                    resp.message('You\'re money has been sent.');
-                                    res.send(resp.toString());
+                                    client.sendMessage({
+                                        to: phone(receiverPhone)[0],
+                                        from: config.twilio_phone,
+                                        body: 'User ' + senderPhone + ' has sent you $' + amount + ' using P2Pesa!'
+
+                                    }, function (err, responseData) {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                    });
+
+                                    client.sendMessage({
+                                        to: phone(senderPhone)[0],
+                                        from: config.twilio_phone,
+                                        body: 'You have successfully sent ' + receiverPhone + ' $' + amount
+
+                                    }, function (err, responseData) {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                    });
+
+                                    res.json('');
                                     return;
                                 });
                             });
