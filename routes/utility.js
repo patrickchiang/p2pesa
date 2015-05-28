@@ -45,7 +45,7 @@ function userSum(userId, done) {
 // Number(getWordAt(s, s.indexOf('$')).substring(1));
 
 // Get last word in message
-// var n = words.split(" ");
+// var n = s.split(' ');
 // n[n.length - 1];
 
 function getWordAt(str, pos) {

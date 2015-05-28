@@ -3,6 +3,12 @@ module.exports = function (app) {
     var ensure = require('./ensure.js')
     var utility = require('./utility.js')
 
+    var config = require('../config');
+    var twilio = require('twilio');
+    var client = twilio(config.twilio_sid, config.twilio_auth);
+    var phone = require('phone');
+
+
     app.post('/central-transfer', ensure.central, function (req, res) {
         models.User.find({
             where: {
@@ -58,7 +64,7 @@ module.exports = function (app) {
         });
     });
 
-    app.post('/user-transfer', ensure.branch, function (req, res) {
+    app.post('/user-transfer', ensure.user, function (req, res) {
         models.User.find({
             where: {
                 phone: req.body.phone
@@ -82,7 +88,7 @@ module.exports = function (app) {
                     }).then(function (transaction) {
                         transaction.save().then(function () {
                             console.log('Transaction complete.');
-                            res.redirect('/transfer?valid=true');
+                            res.redirect('/secure');
                             return;
                         });
                     });
@@ -133,5 +139,22 @@ module.exports = function (app) {
                 });
             });
         });
+    });
+
+    app.post('/mobile', function (req, res) {
+        if (twilio.validateExpressRequest(req, config.twilio_auth)) {
+            var message = req.body.Body;
+            var amount = Number(utility.getWordAt(message, message.indexOf('$')).substring(1));
+            var sender = req.body.From;
+            var n = message.split(' ');
+            var receiver = n[n.length - 1];
+
+            console.log(message);
+            console.log(amount);
+            console.log(sender);
+            console.log(receiver);
+        } else {
+            res.send('You are not twilio.  Buzz off.');
+        }
     });
 };

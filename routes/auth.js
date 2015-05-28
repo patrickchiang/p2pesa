@@ -220,38 +220,33 @@ module.exports = function (app) {
         models.sequelize.sync({force: true}).then(function (stuff) {
 
             console.log('Saving Central Bank User');
-            models.User.create({
-                phone: '0000000000',
+
+            models.User.bulkCreate([{
+                phone: 'Central',
                 pin: bcrypt.hashSync('secure'),
                 branch_status: 'Central'
-            }).then(function (user) {
-                user.save();
-            });
-
-            models.User.create({
-                phone: '2064469181',
+            }, {
+                phone: 'Seattle',
                 pin: bcrypt.hashSync('secure'),
                 branch_status: 'Branch'
-            }).then(function (user) {
-                user.save();
-            });
-
-            models.User.create({
-                phone: '2063029844',
+            }, {
+                phone: 'San Francisco',
+                pin: bcrypt.hashSync('secure'),
+                branch_status: 'Branch'
+            }, {
+                phone: 'New York',
+                pin: bcrypt.hashSync('secure'),
+                branch_status: 'Branch'
+            }, {
+                phone: '+12063029844',
                 pin: bcrypt.hashSync('secure'),
                 branch_status: 'User'
-            }).then(function (user) {
-                user.save();
-            });
+            }, {
+                phone: '+12064572923',
+                pin: bcrypt.hashSync('secure'),
+                branch_status: 'User'
+            }]);
         });
-    });
-
-    app.post('/mobile', function (req, res) {
-        if (twilio.validateExpressRequest(req, config.twilio_auth)) {
-            console.log(req.body);
-        } else {
-            res.send('You are not twilio.  Buzz off.');
-        }
     });
 
     app.get('/logout', function (req, res) {

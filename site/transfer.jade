@@ -7,20 +7,20 @@ html
             p You are logged in as the central controller.
             p Add Money to Branch
             form(action='/central-transfer', method='post')
-                input(type='text', name='phone', placeholder='Branch Phone ID')
+                input(type='text', name='phone', placeholder='Branch Name')
                 input(type='text', name='amount', placeholder='Amount')
                 input(type='submit', value='Add Money')
         else if user && user.branch_status == 'Branch'
             p You are logged in as a branch controller.
             p Add Money to User
             form(action='/branch-transfer', method='post')
-                input(type='text', name='phone', placeholder='Customer Phone ID')
+                input(type='text', name='phone', placeholder='Customer Phone')
                 input(type='text', name='amount', placeholder='Amount')
                 input(type='submit', value='Add Money')
         else if user && user.branch_status == 'User'
             p You are logged in as an end user.
             p Money Transfer
             form(action='/user-transfer', method='post')
-                input(type='text', name='phone', placeholder='Receiver Phone ID')
+                input(type='text', name='phone', placeholder='Receiver Phone')
                 input(type='text', name='amount', placeholder='Amount')
                 input(type='submit', value='Send Money')
