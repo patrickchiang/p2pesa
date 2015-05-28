@@ -2,12 +2,14 @@ doctype html
 html
     head
         title P2Pesa Central Control
+        link(href='img/favicon.ico' rel='shortcut icon')
         link(href='css/bootstrap.min.css' rel='stylesheet')
+        link(href='css/style.css' rel='stylesheet')
     body
         if message
             p.message #{message}
 
-        p Withdraw money from user
+        p.title Withdraw money from user
         form(action='/confirm', method='post', class='form-inline')
             input(type='text', name='phone', placeholder='Customer Phone Number', class='form-control')
             input(type='text', name='amount', placeholder='Amount', class='form-control')

@@ -1,0 +1,28 @@
+body {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%), url('../img/background.jpg') repeat 0 0;
+}
+
+p.message {
+    color: red;
+}
+
+p.title {
+    font-size: 1.5em;
+    margin: 0.667em;
+}
+
+.form-inline {
+    margin: 1em;
+}
+
+.form-control {
+    margin-right: 0.5em;
+}
+
+p {
+    margin: 1em;
+}
+
+a.btn {
+    width: 20em !important;
+}

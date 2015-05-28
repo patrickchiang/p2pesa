@@ -2,9 +2,11 @@ doctype html
 html
     head
         title P2Pesa Confirm
+        link(href='img/favicon.ico' rel='shortcut icon')
         link(href='css/bootstrap.min.css' rel='stylesheet')
+        link(href='css/style.css' rel='stylesheet')
     body
-        p Enter your two step confirmation code!
+        p.title Enter your two step confirmation code!
 
         if user && user.branch_status == 'User'
             form(action='/login-user-two', method='post', class='form-inline')

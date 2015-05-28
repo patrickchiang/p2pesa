@@ -2,19 +2,21 @@ doctype html
 html
     head
         title P2Pesa Register
+        link(href='img/favicon.ico' rel='shortcut icon')
         link(href='css/bootstrap.min.css' rel='stylesheet')
+        link(href='css/style.css' rel='stylesheet')
     body
         if message
             p.message #{message}
 
         if user && user.branch_status == 'Central'
-            p Create New Branch
+            p.title Create New Branch
             form(action='/central-register', method='post', class='form-inline')
                 input(type='text', name='phone', placeholder='Branch Name', class='form-control')
                 input(type='password', name='pin', placeholder='Pin', class='form-control')
                 input(type='submit', value='Login', class='btn btn-primary')
         else if user && user.branch_status == 'Branch'
-            p Create New User
+            p.title Create New User
             form(action='/branch-register', method='post', class='form-inline')
                 input(type='text', name='phone', placeholder='Customer Phone', class='form-control')
                 input(type='password', name='pin', placeholder='Pin', class='form-control')

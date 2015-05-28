@@ -2,13 +2,15 @@ doctype html
 html
     head
         title P2Pesa Central Control
+        link(href='img/favicon.ico' rel='shortcut icon')
         link(href='css/bootstrap.min.css' rel='stylesheet')
+        link(href='css/style.css' rel='stylesheet')
     body
         if message
             p.message #{message}
 
         if user && user.branch_status == 'Central'
-            p Add Money to Branch
+            p.title Add Money to Branch
             form(action='/central-transfer', method='post', class='form-inline')
                 input(type='text', name='phone', placeholder='Branch Name', class='form-control')
                 input(type='text', name='amount', placeholder='Amount', class='form-control')
@@ -16,7 +18,7 @@ html
             p
                 a(href='/branch', class='btn btn-warning') Back to branch
         else if user && user.branch_status == 'Branch'
-            p Add Money to User
+            p.title Add Money to User
             form(action='/branch-transfer', method='post', class='form-inline')
                 input(type='text', name='phone', placeholder='Customer Phone', class='form-control')
                 input(type='text', name='amount', placeholder='Amount', class='form-control')
@@ -24,7 +26,7 @@ html
             p
                 a(href='/branch', class='btn btn-warning') Back to branch
         else if user && user.branch_status == 'User'
-            p Money Transfer
+            p.title Money Transfer
             form(action='/user-transfer', method='post', class='form-inline')
                 input(type='text', name='phone', placeholder='Receiver Phone', class='form-control')
                 input(type='text', name='amount', placeholder='Amount', class='form-control')

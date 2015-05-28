@@ -2,12 +2,14 @@ doctype html
 html
     head
         title P2Pesa Home
+        link(href='img/favicon.ico' rel='shortcut icon')
         link(href='css/bootstrap.min.css' rel='stylesheet')
+        link(href='css/style.css' rel='stylesheet')
     body
         if message
             p.message #{message}
 
-        p User Login
+        p.title User Login
         form(action='/login-user', method='post', class='form-inline')
             input(type='text', name='phone', placeholder='Phone Number', class='form-control')
             input(type='password', name='pin', placeholder='Pin', class='form-control')
