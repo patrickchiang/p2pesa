@@ -160,8 +160,8 @@ module.exports = function (app) {
                         pin: bcrypt.hashSync('secure'),
                         branch_status: 'User'
                     }).then(function (result) {
-                        console.log('User created.');
-                    })
+                        smsSend(senderPhone, receiverPhone, amount, {id: result.id});
+                    });
                 } else if (receiver.branch_status != 'User') {
                     client.sendMessage({
                         to: phone(senderPhone)[0],
@@ -176,36 +176,76 @@ module.exports = function (app) {
 
                     res.json('');
                     return;
+                } else {
+                    smsSend(senderPhone, receiverPhone, amount, receiver);
                 }
 
-                models.User.find({
-                    where: {
-                        phone: senderPhone
+            });
+        } else {
+            res.send('You are not twilio.  Buzz off.');
+        }
+    });
+
+    function smsSend(senderPhone, receiverPhone, amount, receiver) {
+        models.User.find({
+            where: {
+                phone: senderPhone
+            }
+        }).then(function (sender) {
+            if (sender == null || sender.branch_status != 'User') {
+                client.sendMessage({
+                    to: phone(senderPhone)[0],
+                    from: config.twilio_phone,
+                    body: 'You are not a valid P2Pesa user. Please register an account.'
+
+                }, function (err, responseData) {
+                    if (err) {
+                        console.log(err);
                     }
-                }).then(function (sender) {
-                    if (sender == null || sender.branch_status != 'User') {
-                        client.sendMessage({
-                            to: phone(senderPhone)[0],
-                            from: config.twilio_phone,
-                            body: 'You are not a valid P2Pesa user. Please register an account.'
+                });
 
-                        }, function (err, responseData) {
-                            if (err) {
-                                console.log(err);
-                            }
-                        });
+                res.json('');
+                return;
+            }
 
-                        res.json('');
-                        return;
-                    }
+            utility.validateTransaction(sender.id, receiver.id, amount, function (valid) {
+                console.log('Valid: ' + valid);
+                if (!valid) {
+                    client.sendMessage({
+                        to: phone(senderPhone)[0],
+                        from: config.twilio_phone,
+                        body: 'Your send money request was not formatted correctly.'
 
-                    utility.validateTransaction(sender.id, receiver.id, amount, function (valid) {
-                        console.log('Valid: ' + valid);
-                        if (!valid) {
+                    }, function (err, responseData) {
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
+
+                    res.json('');
+                    return;
+                } else {
+                    models.Transaction.create({
+                        amount: amount,
+                        senderId: sender.id,
+                        receiverId: receiver.id
+                    }).then(function (transaction) {
+                        transaction.save().then(function () {
+                            client.sendMessage({
+                                to: phone(receiverPhone)[0],
+                                from: config.twilio_phone,
+                                body: 'User ' + senderPhone + ' has sent you $' + amount + ' using P2Pesa!'
+
+                            }, function (err, responseData) {
+                                if (err) {
+                                    console.log(err);
+                                }
+                            });
+
                             client.sendMessage({
                                 to: phone(senderPhone)[0],
                                 from: config.twilio_phone,
-                                body: 'Your send money request was not formatted correctly.'
+                                body: 'You have successfully sent ' + receiverPhone + ' $' + amount
 
                             }, function (err, responseData) {
                                 if (err) {
@@ -215,46 +255,11 @@ module.exports = function (app) {
 
                             res.json('');
                             return;
-                        } else {
-                            models.Transaction.create({
-                                amount: amount,
-                                senderId: sender.id,
-                                receiverId: receiver.id
-                            }).then(function (transaction) {
-                                transaction.save().then(function () {
-                                    client.sendMessage({
-                                        to: phone(receiverPhone)[0],
-                                        from: config.twilio_phone,
-                                        body: 'User ' + senderPhone + ' has sent you $' + amount + ' using P2Pesa!'
-
-                                    }, function (err, responseData) {
-                                        if (err) {
-                                            console.log(err);
-                                        }
-                                    });
-
-                                    client.sendMessage({
-                                        to: phone(senderPhone)[0],
-                                        from: config.twilio_phone,
-                                        body: 'You have successfully sent ' + receiverPhone + ' $' + amount
-
-                                    }, function (err, responseData) {
-                                        if (err) {
-                                            console.log(err);
-                                        }
-                                    });
-
-                                    res.json('');
-                                    return;
-                                });
-                            });
-                        }
+                        });
                     });
-
-                });
+                }
             });
-        } else {
-            res.send('You are not twilio.  Buzz off.');
-        }
-    });
+
+        });
+    }
 };
