@@ -2,10 +2,15 @@ doctype html
 html
     head
         title P2Pesa Central Control
+        link(href='css/bootstrap.min.css' rel='stylesheet')
     body
-        p You are logged in as a branch controller.
+        if message
+            p.message #{message}
+
         p Withdraw money from user
-        form(action='/confirm', method='post')
-            input(type='text', name='phone', placeholder='Customer Phone Number')
-            input(type='text', name='amount', placeholder='Amount')
-            input(type='submit', value='Withdraw Money')
+        form(action='/confirm', method='post', class='form-inline')
+            input(type='text', name='phone', placeholder='Customer Phone Number', class='form-control')
+            input(type='text', name='amount', placeholder='Amount', class='form-control')
+            input(type='submit', value='Withdraw Money', class='btn btn-primary')
+        p
+            a(href='/branch', class='btn btn-warning') Back to branch

@@ -2,18 +2,22 @@ doctype html
 html
     head
         title P2Pesa Register
+        link(href='css/bootstrap.min.css' rel='stylesheet')
     body
+        if message
+            p.message #{message}
+
         if user && user.branch_status == 'Central'
-            p You are logged in as the central controller.
             p Create New Branch
-            form(action='/central-register', method='post')
-                input(type='text', name='phone', placeholder='Branch Name')
-                input(type='password', name='pin', placeholder='Pin')
-                input(type='submit', value='Login')
+            form(action='/central-register', method='post', class='form-inline')
+                input(type='text', name='phone', placeholder='Branch Name', class='form-control')
+                input(type='password', name='pin', placeholder='Pin', class='form-control')
+                input(type='submit', value='Login', class='btn btn-primary')
         else if user && user.branch_status == 'Branch'
-            p You are logged in as a branch controller.
             p Create New User
-            form(action='/branch-register', method='post')
-                input(type='text', name='phone', placeholder='Customer Phone')
-                input(type='password', name='pin', placeholder='Pin')
-                input(type='submit', value='Add Money')
+            form(action='/branch-register', method='post', class='form-inline')
+                input(type='text', name='phone', placeholder='Customer Phone', class='form-control')
+                input(type='password', name='pin', placeholder='Pin', class='form-control')
+                input(type='submit', value='Add Money', class='btn btn-primary')
+        p
+            a(href='/branch', class='btn btn-warning') Back to branch

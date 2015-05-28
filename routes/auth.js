@@ -155,16 +155,52 @@ module.exports = function (app) {
      * Routing
      */
 
-    app.post('/login-user', passport.authenticate('local-user', {failureRedirect: '/'}), function (req, res) {
-        res.redirect('/confirm');
+    app.post('/login-user', function (req, res, next) {
+        passport.authenticate('local-user', function (err, user, info) {
+            if (err) {
+                return res.render('index.jade', {message: 'Login failed!'});
+            }
+            if (!user) {
+                return res.render('index.jade', {message: 'Login failed!'});
+            }
+            req.logIn(user, function (err) {
+                if (err) {
+                    return res.render('index.jade', {message: 'Login failed!'});
+                }
+                return res.redirect('/confirm');
+            });
+        })(req, res, next);
     });
 
-    app.post('/login-elevated', passport.authenticate('local-elevated', {failureRedirect: '/branch'}), function (req, res) {
-        res.redirect(req.session.returnTo);
+    app.post('/login-elevated', function (req, res, next) {
+        passport.authenticate('local-elevated', function (err, user, info) {
+            if (err) {
+                return res.render('branch.jade', {message: 'Login failed!'});
+            }
+            if (!user) {
+                return res.render('branch.jade', {message: 'Login failed!'});
+            }
+            req.logIn(user, function (err) {
+                if (err) {
+                    return res.render('branch.jade', {message: 'Login failed!'});
+                }
+                return res.redirect('/branch');
+            });
+        })(req, res, next);
     });
 
-    app.post('/login-user-two', passport.authenticate('local-user-two', {failureRedirect: 'confirm.html'}), function (req, res) {
-        res.redirect('/secure');
+    app.post('/login-user-two', function (req, res, next) {
+        passport.authenticate('local-user-two', function (err, user, info) {
+            if (err) {
+                return res.render('index.jade', {message: 'Bad confirmation code!'});
+            }
+            req.logIn(user, function (err) {
+                if (err) {
+                    return res.render('index.jade', {message: 'Bad confirmation code!'});
+                }
+                return res.redirect('/secure');
+            });
+        })(req, res, next);
     });
 
     app.post('/central-register', function (req, res) {
@@ -175,7 +211,7 @@ module.exports = function (app) {
         }).then(function (model) {
             if (model != null) {
                 console.log('User already found');
-                res.status(409).end();
+                res.render('register.jade', {user: req.user, message: 'Branch already exists!'});
             } else {
                 models.User.create({
                     phone: req.body.phone,
@@ -183,7 +219,7 @@ module.exports = function (app) {
                     branch_status: 'Branch'
                 }).then(function (result) {
                     console.log('Branch created.');
-                    res.redirect(req.session.returnTo);
+                    res.render('register.jade', {user: req.user, message: 'Branch successfully registered!'});
                 }).catch(function (err) {
                     console.log(err);
                 });
@@ -199,7 +235,7 @@ module.exports = function (app) {
         }).then(function (model) {
             if (model != null) {
                 console.log('User already found');
-                res.status(409).end();
+                res.render('register.jade', {user: req.user, message: 'User already exists!'});
             } else {
                 models.User.create({
                     phone: req.body.phone,
@@ -207,7 +243,7 @@ module.exports = function (app) {
                     branch_status: 'User'
                 }).then(function (result) {
                     console.log('User created.');
-                    res.redirect(req.session.returnTo);
+                    res.render('register.jade', {user: req.user, message: 'User successfully registered!'});
                 }).catch(function (err) {
                     console.log(err);
                 });

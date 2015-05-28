@@ -2,25 +2,32 @@ doctype html
 html
     head
         title P2Pesa Central Control
+        link(href='css/bootstrap.min.css' rel='stylesheet')
     body
+        if message
+            p.message #{message}
+
         if user && user.branch_status == 'Central'
-            p You are logged in as the central controller.
             p Add Money to Branch
-            form(action='/central-transfer', method='post')
-                input(type='text', name='phone', placeholder='Branch Name')
-                input(type='text', name='amount', placeholder='Amount')
-                input(type='submit', value='Add Money')
+            form(action='/central-transfer', method='post', class='form-inline')
+                input(type='text', name='phone', placeholder='Branch Name', class='form-control')
+                input(type='text', name='amount', placeholder='Amount', class='form-control')
+                input(type='submit', value='Add Money', class='btn btn-primary')
+            p
+                a(href='/branch', class='btn btn-warning') Back to branch
         else if user && user.branch_status == 'Branch'
-            p You are logged in as a branch controller.
             p Add Money to User
-            form(action='/branch-transfer', method='post')
-                input(type='text', name='phone', placeholder='Customer Phone')
-                input(type='text', name='amount', placeholder='Amount')
-                input(type='submit', value='Add Money')
+            form(action='/branch-transfer', method='post', class='form-inline')
+                input(type='text', name='phone', placeholder='Customer Phone', class='form-control')
+                input(type='text', name='amount', placeholder='Amount', class='form-control')
+                input(type='submit', value='Add Money', class='btn btn-primary')
+            p
+                a(href='/branch', class='btn btn-warning') Back to branch
         else if user && user.branch_status == 'User'
-            p You are logged in as an end user.
             p Money Transfer
-            form(action='/user-transfer', method='post')
-                input(type='text', name='phone', placeholder='Receiver Phone')
-                input(type='text', name='amount', placeholder='Amount')
-                input(type='submit', value='Send Money')
+            form(action='/user-transfer', method='post', class='form-inline')
+                input(type='text', name='phone', placeholder='Receiver Phone', class='form-control')
+                input(type='text', name='amount', placeholder='Amount', class='form-control')
+                input(type='submit', value='Send Money', class='btn btn-primary')
+            p
+                a(href='/secure', class='btn btn-warning') Back to user

@@ -16,7 +16,7 @@ function validateTransaction(senderId, receiverId, amount, done) {
     }
 
     userSum(senderId, function (sum) {
-        done(sum >= amount);
+        done(sum >= amount, sum);
     });
 }
 
@@ -40,13 +40,6 @@ function userSum(userId, done) {
         done(sum);
     });
 }
-
-// Get dollar amount where s is message
-// Number(getWordAt(s, s.indexOf('$')).substring(1));
-
-// Get last word in message
-// var n = s.split(' ');
-// n[n.length - 1];
 
 function getWordAt(str, pos) {
     // Perform type conversions.

@@ -16,7 +16,7 @@ module.exports = function (app) {
             }
         }).then(function (receiver) {
             if (receiver == null || receiver.branch_status != 'Branch')
-                res.json('invalid target');
+                res.render('transfer.jade', {user: req.user, message: 'Invalid branch!'});
 
             models.Transaction.create({
                 amount: req.body.amount,
@@ -25,7 +25,7 @@ module.exports = function (app) {
             }).then(function (transaction) {
                 transaction.save().then(function () {
                     console.log('Transaction complete.');
-                    res.redirect('/transfer');
+                    res.render('transfer.jade', {user: req.user, message: 'Transfer completed successfully!'});
                 });
             });
         })
@@ -38,14 +38,14 @@ module.exports = function (app) {
             }
         }).then(function (receiver) {
             if (receiver == null || receiver.branch_status != 'User') {
-                res.redirect('/transfer?valid=false');
+                res.render('transfer.jade', {user: req.user, message: 'Invalid user!'});
                 return;
             }
 
             utility.validateTransaction(req.user.id, receiver.id, req.body.amount, function (valid) {
                 console.log('Valid: ' + valid);
                 if (!valid) {
-                    res.redirect('/transfer?valid=false');
+                    res.render('transfer.jade', {user: req.user, message: 'Invalid add amount!'});
                     return;
                 } else {
                     models.Transaction.create({
@@ -55,7 +55,10 @@ module.exports = function (app) {
                     }).then(function (transaction) {
                         transaction.save().then(function () {
                             console.log('Transaction complete.');
-                            res.redirect('/transfer?valid=true');
+                            res.render('transfer.jade', {
+                                user: req.user,
+                                message: 'Transfer completed successfully!'
+                            });
                             return;
                         });
                     });
@@ -71,14 +74,14 @@ module.exports = function (app) {
             }
         }).then(function (receiver) {
             if (receiver == null || receiver.branch_status != 'User') {
-                res.redirect('/transfer?valid=false');
+                res.render('transfer.jade', {user: req.user, message: 'Invalid user!'});
                 return;
             }
 
             utility.validateTransaction(req.user.id, receiver.id, req.body.amount, function (valid) {
                 console.log('Valid: ' + valid);
                 if (!valid) {
-                    res.redirect('/transfer?valid=false');
+                    res.render('transfer.jade', {user: req.user, message: 'Invalid transfer amount!'});
                     return;
                 } else {
                     models.Transaction.create({
@@ -88,7 +91,7 @@ module.exports = function (app) {
                     }).then(function (transaction) {
                         transaction.save().then(function () {
                             console.log('Transaction complete.');
-                            res.redirect('/secure');
+                            res.render('transfer.jade', {user: req.user, message: 'Transfer completed successfully!'});
                             return;
                         });
                     });
@@ -99,7 +102,7 @@ module.exports = function (app) {
 
     app.post('/withdraw', ensure.branch, function (req, res) {
         if (req.body.code != req.user.one_time_code) {
-            res.redirect('/withdraw?valid=false');
+            res.render('withdraw.jade', {user: req.user, message: 'Wrong confirmation code!'});
             return;
         }
 
@@ -109,7 +112,7 @@ module.exports = function (app) {
             }
         }).then(function (receiver) {
             if (receiver == null || receiver.branch_status != 'Branch') {
-                res.redirect('/withdraw?valid=false');
+                res.render('withdraw.jade', {user: req.user, message: 'Invalid phone number!'});
                 return;
             }
 
@@ -121,7 +124,7 @@ module.exports = function (app) {
                 utility.validateTransaction(sender.id, receiver.id, req.user.withdraw_amount, function (valid) {
                     console.log('Valid: ' + valid);
                     if (!valid) {
-                        res.redirect('/withdraw?valid=false');
+                        res.render('withdraw.jade', {user: req.user, message: 'Invalid withdrawal amount!'});
                         return;
                     } else {
                         models.Transaction.create({
@@ -130,8 +133,10 @@ module.exports = function (app) {
                             receiverId: receiver.id
                         }).then(function (transaction) {
                             transaction.save().then(function () {
-                                console.log('Withdrawal complete.');
-                                res.redirect('/withdraw?valid=true');
+                                res.render('withdraw.jade', {
+                                    user: req.user,
+                                    message: 'Withdrawal completed successfully!'
+                                });
                                 return;
                             });
                         });
@@ -208,7 +213,7 @@ module.exports = function (app) {
                 return;
             }
 
-            utility.validateTransaction(sender.id, receiver.id, amount, function (valid) {
+            utility.validateTransaction(sender.id, receiver.id, amount, function (valid, sum) {
                 console.log('Valid: ' + valid);
                 if (!valid) {
                     client.sendMessage({
@@ -245,8 +250,7 @@ module.exports = function (app) {
                             client.sendMessage({
                                 to: phone(senderPhone)[0],
                                 from: config.twilio_phone,
-                                body: 'You have successfully sent ' + receiverPhone + ' $' + amount
-
+                                body: 'You have successfully sent ' + receiverPhone + ' $' + amount + '. Your balance is now $' + sum
                             }, function (err, responseData) {
                                 if (err) {
                                     console.log(err);

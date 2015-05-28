@@ -2,8 +2,10 @@ doctype html
 html
     head
         title P2Pesa Secure
+        link(href='css/bootstrap.min.css' rel='stylesheet')
     body
-        p You are logged in securely
-        p You have $#{sum}
+        p You are logged in securely. You have $#{sum}.
         p
-            a(href='/transfer') Transfer Money
+            a(href='/transfer', class='btn btn-primary') Transfer Money
+        p
+            a(href='/logout' class='btn btn-danger') Logout

@@ -2,14 +2,17 @@ doctype html
 html
     head
         title P2Pesa Confirm
+        link(href='css/bootstrap.min.css' rel='stylesheet')
     body
+        p Enter your two step confirmation code!
+
         if user && user.branch_status == 'User'
-            form(action='/login-user-two', method='post')
+            form(action='/login-user-two', method='post', class='form-inline')
                 input(type='text', name='phone', hidden='hidden', value=user.phone)
-                input(type='text', name='code', placeholder='Confirmation Code')
-                input(type='submit', value='Confirm')
+                input(type='text', name='code', placeholder='Confirmation Code', class='form-control')
+                input(type='submit', value='Confirm', class='btn btn-primary')
         else if user && user.branch_status == 'Branch'
-            form(action='/withdraw', method='post')
+            form(action='/withdraw', method='post', class='form-inline')
                 input(type='text', name='phone', hidden='hidden', value=user.phone)
-                input(type='text', name='code', placeholder='Confirmation Code')
-                input(type='submit', value='Confirm')
+                input(type='text', name='code', placeholder='Confirmation Code', class='form-control')
+                input(type='submit', value='Confirm', class='btn btn-primary')

@@ -1,25 +1,32 @@
 doctype html
 html
     head
-        title P2Pesa Branch Control
+        title P2Pesa Branch
+        link(href='css/bootstrap.min.css' rel='stylesheet')
     body
         if user && user.branch_status == 'Central'
             p You are logged in as the central controller.
             p
-                a(href='/transfer') Add Money to Branch
+                a(href='/transfer' class='btn btn-primary') Add Money to Branch
             p
-                a(href='/register') Create New Branch
+                a(href='/register' class='btn btn-primary') Create New Branch
+            p
+                a(href='/logout' class='btn btn-danger') Logout
         else if user && user.branch_status == 'Branch'
-            p You are logged in as a branch controller.
-            p You have $#{sum}
+            p You are logged in as a branch controller. You have $#{sum}.
             p
-                a(href='/withdraw') Withdraw Money
+                a(href='/withdraw' class='btn btn-primary') Withdraw Money
             p
-                a(href='/transfer') Add Money to Account
+                a(href='/transfer' class='btn btn-primary') Add Money to Account
             p
-                a(href='/register') Create New User
+                a(href='/register' class='btn btn-primary') Create New User
+            p
+                a(href='/logout' class='btn btn-danger') Logout
         else
-            form(action='/login-elevated', method='post')
-                input(type='text', name='phone', placeholder='Branch Name')
-                input(type='password', name='pin', placeholder='Password')
-                input(type='submit', value='Login')
+            p Branch Login
+            form(action='/login-elevated', method='post', class='form-inline')
+                input(type='text', name='phone', placeholder='Branch Name', class='form-control')
+                input(type='password', name='pin', placeholder='Password', class='form-control')
+                input(type='submit', value='Login', class='btn btn-primary')
+            p
+                a(href='/' class='btn btn-warning') Go to user login
