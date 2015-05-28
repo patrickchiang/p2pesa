@@ -145,14 +145,66 @@ module.exports = function (app) {
         if (twilio.validateExpressRequest(req, config.twilio_auth)) {
             var message = req.body.Body;
             var amount = Number(utility.getWordAt(message, message.indexOf('$')).substring(1));
-            var sender = req.body.From;
+            var senderPhone = req.body.From;
             var n = message.split(' ');
-            var receiver = n[n.length - 1];
+            var receiverPhone = n[n.length - 1];
 
             console.log(message);
             console.log(amount);
-            console.log(sender);
-            console.log(receiver);
+            console.log(senderPhone);
+            console.log(receiverPhone);
+
+            var resp = new twilio.TwimlResponse();
+
+            models.User.find({
+                where: {
+                    phone: receiverPhone
+                }
+            }).then(function (receiver) {
+                if (receiver == null || receiver.branch_status != 'User') {
+                    resp = new twilio.TwimlResponse();
+                    resp.message('Bad receiver');
+                    res.send(resp.toString());
+                    return;
+                }
+
+                models.User.find({
+                    where: {
+                        phone: senderPhone
+                    }
+                }).then(function (sender) {
+                    if (receiver == null || receiver.branch_status != 'User') {
+                        resp = new twilio.TwimlResponse();
+                        resp.message('You\'re not a user.');
+                        res.send(resp.toString());
+                        return;
+                    }
+
+                    utility.validateTransaction(sender.id, receiver.id, amount, function (valid) {
+                        console.log('Valid: ' + valid);
+                        if (!valid) {
+                            resp = new twilio.TwimlResponse();
+                            resp.message('Invalid send operation.');
+                            res.send(resp.toString());
+                            return;
+                        } else {
+                            models.Transaction.create({
+                                amount: req.body.amount,
+                                senderId: req.user.id,
+                                receiverId: receiver.id
+                            }).then(function (transaction) {
+                                transaction.save().then(function () {
+                                    resp = new twilio.TwimlResponse();
+                                    resp.message('You\'re money has been sent.');
+                                    res.send(resp.toString());
+                                    return;
+                                });
+                            });
+                        }
+                    });
+
+                });
+            });
         } else {
             res.send('You are not twilio.  Buzz off.');
         }
