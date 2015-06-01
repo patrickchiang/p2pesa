@@ -93,36 +93,6 @@ app.get('/register', ensure.save, ensure.elevated, function (req, res) {
     res.render('register.jade', {user: req.user});
 });
 
-app.get('/init', function (req, res) {
-    console.log('Creating and zeroing database');
-    models.sequelize.sync({force: true}).then(function (stuff) {
-
-        console.log('Saving Central Bank User');
-
-        models.User.bulkCreate([{
-            phone: 'Central',
-            pin: bcrypt.hashSync('secure'),
-            branch_status: 'Central'
-        }, {
-            phone: 'Seattle',
-            pin: bcrypt.hashSync('secure'),
-            branch_status: 'Branch'
-        }, {
-            phone: 'San Francisco',
-            pin: bcrypt.hashSync('secure'),
-            branch_status: 'Branch'
-        }, {
-            phone: 'New York',
-            pin: bcrypt.hashSync('secure'),
-            branch_status: 'Branch'
-        }, {
-            phone: '+12063029844',
-            pin: bcrypt.hashSync('secure'),
-            branch_status: 'User'
-        }]);
-    });
-});
-
 /**
  * Static views
  */
@@ -132,7 +102,7 @@ app.use('/', express.static(__dirname + '/site'));
 /**
  * Initialize server
  */
-var server = app.listen(3000, function () {
+var server = app.listen(80, function () {
     console.log('Listening on port %d', server.address().port);
 });
 server.timeout = 120000;

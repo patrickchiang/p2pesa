@@ -251,36 +251,6 @@ module.exports = function (app) {
         });
     });
 
-    app.get('/init', function (req, res) {
-        console.log('Creating and zeroing database');
-        models.sequelize.sync({force: true}).then(function (stuff) {
-
-            console.log('Saving Central Bank User');
-
-            models.User.bulkCreate([{
-                phone: 'Central',
-                pin: bcrypt.hashSync('secure'),
-                branch_status: 'Central'
-            }, {
-                phone: 'Seattle',
-                pin: bcrypt.hashSync('secure'),
-                branch_status: 'Branch'
-            }, {
-                phone: 'San Francisco',
-                pin: bcrypt.hashSync('secure'),
-                branch_status: 'Branch'
-            }, {
-                phone: 'New York',
-                pin: bcrypt.hashSync('secure'),
-                branch_status: 'Branch'
-            }, {
-                phone: '+12063029844',
-                pin: bcrypt.hashSync('secure'),
-                branch_status: 'User'
-            }]);
-        });
-    });
-
     app.get('/logout', function (req, res) {
         req.logout();
         delete req.session.secondFactor;
