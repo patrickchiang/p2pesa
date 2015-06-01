@@ -1,11 +1,11 @@
 module.exports = {
-    db_name: 'p2pesa',
-    db_user: 'root',
-    db_pass: 'root',
+    db_name: 'p2pesa',          // Name of database
+    db_user: 'root',            // Database user
+    db_pass: 'root',            // Database password
 
-    twilio_sid: 'YOUR TWILIO SID',
-    twilio_auth: 'YOUR TWILIO AUTH',
-    twilio_phone: 'YOUR TWILIO PHONE NUMBER',
+    twilio_sid: '',             // SID of your Twilio account
+    twilio_auth: '',            // Auth key of your Twilio account
+    twilio_phone: '',           // Phone number given to you by Twilio
 
-    session_secret: 'patrick is the best as always'
+    session_secret: 'secret'    // Any secret string for creating session keys
 };
